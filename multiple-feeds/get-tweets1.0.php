@@ -5,6 +5,14 @@
 
 session_start();
 require_once("twitteroauth/twitteroauth.php"); //Path to twitteroauth library
+
+$type="user_timeline";
+$q="";
+
+if( isset($_GET) && isset($_GET['type']) && isset($_GET['q']) ){
+	$q=$_GET['q'];
+	$type=$_GET['type'];
+}
  
 $twitteruser = "thisdigitalinc";
 $notweets = 30;
@@ -19,9 +27,15 @@ function getConnectionWithAccessToken($cons_key, $cons_secret, $oauth_token, $oa
 }
  
 $connection = getConnectionWithAccessToken($consumerkey, $consumersecret, $accesstoken, $accesstokensecret);
- 
-$tweets = $connection->get("https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=".$twitteruser."&count=".$notweets);
- echo json_encode($tweets);
+
+$tweets = '';
+if($type == 'search'){
+	$tweets = $connection->get("https://api.twitter.com/1.1/search/tweets.json?count=".$notweets."&q=".$q);
+}
+else {
+	$tweets = $connection->get("https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=".$twitteruser."&count=".$notweets);
+}
+echo json_encode($tweets);
 ?>
 
 
